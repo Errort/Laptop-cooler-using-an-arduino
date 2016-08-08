@@ -1,0 +1,115 @@
+int fanMode = 0;
+
+// Initial Fan Speeds
+int fanPinSpeed = 0;
+int fanPin2Speed = 0;
+
+// Button Input Pin
+int buttonPin = 2;
+
+// Led Ring Pin (PWM)
+int ringPin = 11;
+
+// Default Brightness for LED Ring
+int ringBrightness = 255;
+
+// PWM Pins
+int fanPin = 3;
+int fanPin2 = 5;
+
+// LEDS
+const int ledPin1 = 6;
+const int ledPin2 = 10;
+const int ledPin3 = 9;
+Stap: de Setup
+
+// led ring output
+pinMode(ringPin, OUTPUT);
+
+//LED
+pinMode(ledPin1, OUTPUT);
+
+//turn led ring on
+analogWrite(ringPin, ringBrightness);
+pinMode(13, OUTPUT);
+pinMode(10,OUTPUT);
+pinMode(9,OUTPUT);
+
+//button input
+pinMode(buttonPin, INPUT);
+
+//pwm pins
+pinMode(fanPin, OUTPUT); // 140mm
+pinMode(fanPin2, OUTPUT); // 140mm
+Serial.begin(9600);}
+
+void setup()
+{
+byte brightness;
+
+if (Serial.available()) {
+brightness = Serial.read();
+
+// set the brightness of the LED:
+analogWrite(ledPin1, brightness); }
+if ( digitalRead(buttonPin) == HIGH )
+
+{
+// Increment the fan mode
+if ( fanMode < 3 ) {
+fanMode++;
+} else {
+fanMode = 0;
+}
+
+// Set the speed depending on the case
+switch ( fanMode ) {
+case 0:
+
+// Silent
+digitalWrite (ledPin1, LOW);
+digitalWrite (ledPin2, HIGH);
+digitalWrite (ledPin3, LOW);
+fanPinSpeed = 80;
+fanPin2Speed = 80;
+break;
+case 1:
+
+// Optimal
+digitalWrite (ledPin1, LOW);
+digitalWrite (ledPin2, LOW);
+digitalWrite (ledPin3, HIGH);
+fanPinSpeed = 150;
+fanPin2Speed = 150;
+break;
+case 2:
+
+// Max
+digitalWrite (ledPin1, HIGH);
+digitalWrite (ledPin2, LOW);
+digitalWrite (ledPin3, LOW);
+fanPinSpeed = 255;
+fanPin2Speed = 255;
+break;
+default:
+
+// Default | fans gaan uit
+digitalWrite (ledPin1, LOW);
+digitalWrite (ledPin2, LOW);
+digitalWrite (ledPin3, LOW);
+fanPinSpeed = 0;
+fanPin2Speed = 0;
+}
+// Serial output for debugging
+Serial.print(“fanPin: “); Serial.println(fanPinSpeed);
+Serial.print(“fanPin2: “); Serial.println(fanPin2Speed);
+Serial.println();
+
+// Write the changes to the PWM pins
+analogWrite(fanPin, fanPinSpeed);
+analogWrite(fanPin2, fanPin2Speed);
+// Catch until button released for software debounce
+while ( digitalRead(buttonPin) == HIGH ) {}
+delay(20);
+}
+}
